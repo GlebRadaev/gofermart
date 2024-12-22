@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/glebradaev/gofermart)](https://goreportcard.com/report/github.com/glebradaev/gofermart) [![gophermart](https://github.com/glebradaev/gofermart/actions/workflows/gofermart.yml/badge.svg)](https://github.com/glebradaev/gofermart/actions/workflows/gofermart.yml) [![go version](https://img.shields.io/badge/golang-v1.22.7-lightblue)](https://go.dev/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/glebradaev/gofermart)](https://goreportcard.com/report/github.com/glebradaev/gofermart) [![gophermart](https://github.com/glebradaev/gofermart/actions/workflows/gophermart.yml/badge.svg)](https://github.com/glebradaev/gofermart/actions/workflows/gophermart.yml) [![go version](https://img.shields.io/badge/golang-v1.22.7-lightblue)](https://go.dev/)
 
 # Gofermart Accrual System
 
