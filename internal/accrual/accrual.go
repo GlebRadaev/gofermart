@@ -52,7 +52,7 @@ func New(cfg *config.Config, orderRepo orderservice.Repo, balanceRepo balanceser
 		client:         client,
 		limit:          1000,
 		workerPool:     NewWorkerPool(10),
-		updateInterval: time.Second * 20,
+		updateInterval: time.Second * 5,
 	}
 }
 
