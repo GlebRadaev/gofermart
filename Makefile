@@ -36,7 +36,7 @@ lint:
 .PHONY: test
 test:
 	@echo "Running tests..."
-	go test -v ./...
+	go clean -testcache && go test -v ./...
 
 .PHONY: vet
 vet:
