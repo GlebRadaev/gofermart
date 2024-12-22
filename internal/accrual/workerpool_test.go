@@ -53,6 +53,7 @@ func TestWorkerPool(t *testing.T) {
 
 				err := wp.AddTask(ctx, func() error {
 					t.Error("Task should not be executed")
+					time.Sleep(100 * time.Millisecond)
 					return nil
 				})
 				assert.Error(t, err)
