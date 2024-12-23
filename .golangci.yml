@@ -1,0 +1,49 @@
+run:
+  concurrency: 4
+  issues-exit-code: 1
+  timeout: 2m
+
+output:
+  print-issued-lines: true
+  print-linter-name: true
+
+linters:
+  enable-all: false
+  disable:
+    - staticcheck
+    - goimports
+    - errcheck
+    - wsl
+    - goconst
+    - funlen
+    - gci
+    - gochecknoglobals
+    - gocritic
+    - godot
+    - gofmt
+    - gofumpt
+    - gosec
+    - lll
+    - nestif
+    - prealloc
+    - unconvert
+    - whitespace
+    - gomnd
+    - nlreturn
+    - godox
+    - stylecheck
+    - gofmt
+    - gochecknoinits
+    - gocognit
+    - goimports
+    - gocritic
+  fast: false
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 100
+  max-same-issues: 3
+  new: false
+  exclude-files:
+    - ".*_test.go"
+  
