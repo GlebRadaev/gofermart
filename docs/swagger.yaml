@@ -1,0 +1,333 @@
+basePath: /
+definitions:
+  dto.BalanceResponseDTO:
+    properties:
+      current:
+        example: 500.5
+        type: number
+      withdrawn:
+        example: 42
+        type: number
+    type: object
+  dto.BalanceWithdrawRequestDTO:
+    properties:
+      order:
+        example: "2377225624"
+        type: string
+      sum:
+        example: 500
+        type: number
+    type: object
+  dto.GetOrdersResponseDTO:
+    properties:
+      accrual:
+        example: 500
+        type: number
+      number:
+        example: "1234567890"
+        type: string
+      status:
+        example: PROCESSED
+        type: string
+      uploaded_at:
+        example: "2020-12-09T16:09:57+03:00"
+        type: string
+    type: object
+  dto.GetWithdrawalsResponseDTO:
+    properties:
+      order:
+        example: "2377225624"
+        type: string
+      processed_at:
+        example: "2020-12-09T16:09:57+03:00"
+        type: string
+      sum:
+        example: 500
+        type: number
+    type: object
+  dto.LoginRequestDTO:
+    properties:
+      login:
+        maxLength: 50
+        minLength: 3
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  dto.LoginResponseDTO:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.RegisterRequestDTO:
+    properties:
+      login:
+        maxLength: 50
+        minLength: 3
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  dto.RegisterResponseDTO:
+    properties:
+      message:
+        type: string
+    type: object
+  utils.Response:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API Server
+  title: GoFemart API
+  version: "1.0"
+paths:
+  /api/user/balance:
+    get:
+      description: Retrieve the current loyalty points balance and the total amount
+        withdrawn for the authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Current balance and withdrawn points
+          schema:
+            $ref: '#/definitions/dto.BalanceResponseDTO'
+        "401":
+          description: User not authorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - BearerAuth: []
+      summary: Get current user balance
+      tags:
+      - Баланс
+  /api/user/balance/withdraw:
+    post:
+      consumes:
+      - application/json
+      description: Withdraw points from the user balance for the provided order number.
+      parameters:
+      - description: Withdrawal request payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BalanceWithdrawRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Withdrawal successful
+          schema:
+            type: string
+        "401":
+          description: User not authorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "402":
+          description: Insufficient balance
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "422":
+          description: Invalid order number
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - BearerAuth: []
+      summary: Request funds withdrawal
+      tags:
+      - Баланс
+  /api/user/login:
+    post:
+      consumes:
+      - application/json
+      description: Log in with a user account and get a JWT token
+      parameters:
+      - description: Login request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResponseDTO'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: Authenticate user
+      tags:
+      - Auth
+  /api/user/orders:
+    get:
+      description: Retrieve a list of uploaded orders for the authorized user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.GetOrdersResponseDTO'
+            type: array
+        "204":
+          description: No data available
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: User not authorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: Get orders list for user
+      tags:
+      - Orders
+    post:
+      consumes:
+      - text/plain
+      description: Allow authenticated users to add a new order using a valid order
+        number.
+      parameters:
+      - description: Order number to be added
+        in: body
+        name: orderNumber
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order already uploaded by this user
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "202":
+          description: New order has been accepted for processing
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad request due to incorrect order number format
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: User not authorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "409":
+          description: Order already uploaded by another user
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "422":
+          description: Invalid order number format
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - BearerAuth: []
+      summary: Add a new order
+      tags:
+      - Orders
+  /api/user/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account with login and password
+      parameters:
+      - description: Register request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RegisterResponseDTO'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "409":
+          description: User already exists
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: Register a new user
+      tags:
+      - Auth
+  /api/user/withdrawals:
+    get:
+      description: Get withdrawals history for the authenticated user with sorted
+        by processed at date
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Withdrawals history
+          schema:
+            items:
+              $ref: '#/definitions/dto.GetWithdrawalsResponseDTO'
+            type: array
+        "204":
+          description: Withdrawals not found
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: User not authorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - BearerAuth: []
+      summary: Get withdrawals history
+      tags:
+      - Баланс
+swagger: "2.0"

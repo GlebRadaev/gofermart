@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - postgres-data:/var/lib/postgresql/gofermart/data
+    ports:
+      - ${DATABASE_PORT}:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  accrual:
+    build:
+      context: .
+      dockerfile: docker/accrual/Dockerfile
+    ports:
+      - "${ACCRUAL_PORT}:${ACCRUAL_PORT}"
+    environment:
+      RUN_ADDRESS: :${ACCRUAL_PORT}
+    restart: always
+
+  gofermart:
+    build:
+      context: .
+      dockerfile: docker/gofermart/Dockerfile
+    ports:
+      - "${GOFERMART_PORT}:${GOFERMART_PORT}"
+    environment:
+      RUN_ADDRESS: :${GOFERMART_PORT}
+      DATABASE_URI: "postgres://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@postgres:5432/${DATABASE_NAME}?sslmode=disable"
+      ACCRUAL_SYSTEM_ADDRESS: accrual:${ACCRUAL_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
